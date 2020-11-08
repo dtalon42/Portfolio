@@ -1,0 +1,139 @@
+﻿@model GuildCars.Models.ApplicationUser
+@{
+    ViewBag.Title = "Models";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Models</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <form id="modelForm">
+                <label for="newModel">New Model</label>
+                @Html.HiddenFor(m => m.Email, new { @class = "form-control", id = "addedBy" })
+                <!--<input type="hidden" id="addedBy" name="addedBy" value="testadmin" /> --><!-- once security is implemented, change this to username or email or whatever-->
+                <input type="text" id="newModel" name="model" />
+
+            </form>
+        </div>
+        <div class="col-4">
+            <form action="/" id="modelForm">
+                <select name="make" class="custom-select" id="makeDrop">
+                    <option selected>Make</option>
+                </select>
+            </form>
+        </div>
+        <div class="col-4">
+            <button type="submit" id="submitModel">Save</button>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered" id="modelTable">
+    <thead>
+        <tr>
+            <th scope="col">Make</th>
+            <th scope="col">Model</th>
+            <th scope="col">Date Added</th>
+            <th scope="col">User</th>
+        </tr>
+    </thead>
+    <tbody id="makes">
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getMakesModels",
+                success: function (makemodelArray) {
+                    $.each(makemodelArray, function (index, makeModel) {
+                        var id = index;
+                        var make = makeModel.make;
+                        var dateAdded = makeModel.dateAdded;
+                        var model = makeModel.model;
+                        var addedBy = makeModel.addedBy;
+
+                        var tableRow = document.createElement("tr");
+
+                        var td1 = document.createElement("td");
+                        td1.id = "make" + id;
+                        tableRow.appendChild(td1);
+
+                        var td2 = document.createElement("td");
+                        td2.id = "model" + id;
+                        tableRow.appendChild(td2);
+
+                        var td3 = document.createElement("td");
+                        td3.id = "dateAdded" + id;
+                        tableRow.appendChild(td3);
+
+                        var td4 = document.createElement("td");
+                        td4.id = "addedBy" + id;
+                        tableRow.appendChild(td4);
+
+                        var table = document.getElementsByClassName("table");
+                        $(table).find('tbody').append(tableRow);
+
+                        $("#make" + id).text(make);
+                        $("#model" + id).text(model);
+                        $("#dateAdded" + id).text(dateAdded);
+                        $("#addedBy" + id).text(addedBy);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getMake",
+                success: function (makeArray) {
+                    $.each(makeArray, function (index, make) {
+                        var id = make.make_ID;
+                        var maker = make.make;
+                        var dateAdded = make.dateAdded;
+                        var addedBy = make.addedBy;
+
+                        var makeSelect = document.createElement("option");
+                        var optionValue = id;
+                        makeSelect.value = optionValue;
+
+                        $("#makeDrop").append(makeSelect);
+
+                        makeSelect.id = "makeSelect" + id;
+
+                        $("#makeSelect" + id).text(maker);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+        $("#submitModel").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44318/api/addModel",
+                contentType: 'application/json',
+                data: JSON.stringify({ "make_ID":$('#makeDrop').val(), "model": $('#newModel').val(), "addedBy": $('#addedBy').val(),  }),
+                success: function (data, textStatus, jQxr) {
+                    $('#modelForm').html(JSON.stringify(data));
+                    window.location.reload();
+                },
+                error: function (jqXr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+            
+        });
+    });
+
+
+
+</script>

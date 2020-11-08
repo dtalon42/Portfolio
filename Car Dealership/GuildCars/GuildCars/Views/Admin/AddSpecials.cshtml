@@ -1,0 +1,188 @@
+﻿
+@{
+    ViewBag.Title = "Specials";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Specials</h2>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<style>
+    label {
+        display:inline-block;
+        width: 100px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    label, input {
+        margin-bottom: 10px;
+    }
+
+    input {
+        width: 50%;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    i {
+        margin-top: 20px;
+        font-size: 50px;
+    }
+
+    #addSpecial {
+        border: solid;
+        margin-bottom: 15px;
+    }
+
+    #specialsList > .row {
+        margin-bottom: 10px;
+        border: solid;
+        margin: auto;
+    }
+
+    #specialsList > button {
+        float: right;
+    }
+
+    p:nth-child(2){
+        font-weight:bold;
+    }
+
+</style>
+
+<div class="container" id="addSpecial">
+    <div class="row">
+        <div class="col-md-6">
+            <ul>
+                <li>
+                    <label for="name">Title</label>
+                    <input type="text" id="name" name="name" required />
+                </li>
+                <li>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="5" cols="100" maxlength="250" required></textarea>
+                </li>
+                <li>
+                    <button type="submit" id="submitSpecial" name="submitSpecial">Save</button>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+
+        </div>
+    </div>
+</div>
+
+<div class="container" id="specialsList">
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#submitSpecial").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44318/api/addSpecial",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "name": $('#name').val(), "description": $('#description').val()
+                }),
+                success: function (data, textStatus, jQxr) {
+                    $('#contactForm').html(JSON.stringify(data));
+                    window.location.reload();
+                },
+                error: function (jqXr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        });
+
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getSpecials",
+                success: function (specialArray) {
+                    $.each(specialArray, function (index, special) {
+                        var id = special.special_ID;
+                        var name = special.name;
+                        var description = special.description;
+
+                        var newDiv = document.createElement("div");
+                        var iconColumn = document.createElement("div");
+                        var columnDiv = document.createElement("div");
+
+                        var h1 = document.createElement("p");
+
+                        var icon = document.createElement("i");
+                        icon.className = "glyphicon glyphicon-usd";
+
+                        h1.setAttribute("id", "name");
+
+                        var p1 = document.createElement("p");
+                        p1.setAttribute("id", "description");
+
+                        var deleteSpecial = document.createElement("button");
+                        deleteSpecial.className = "btn-primary pull-right"
+                        deleteSpecial.id = "special" + id;
+                        deleteSpecial.name = id;
+                        $(deleteSpecial).text("Delete");
+
+
+                        newDiv.className = "row";
+
+                        iconColumn.className = "col-med-1";
+                        iconColumn.appendChild(icon);
+                        newDiv.appendChild(iconColumn);
+
+                        columnDiv.id = id;
+                        columnDiv.className = "col-med-11";
+                        newDiv.appendChild(columnDiv);
+
+                        columnDiv.appendChild(deleteSpecial);
+                        columnDiv.appendChild(h1);
+                        columnDiv.appendChild(p1);
+
+
+                        document.getElementById("specialsList").appendChild(newDiv);
+
+                        $('#' + id + " > #name").text(name);
+                        $('#' + id + " > #description").text(description);
+
+                        $("#special" + id).click(function () {
+                            var conf = confirm("Delete this special?");
+                            if (conf == true) {
+                                $.ajax({
+                                    url: 'https://localhost:44318/api/deleteSpecial/'+ this.name,
+                                    type: 'DELETE',
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        alert("Special deleted.");
+                                        window.location.reload();
+                                    },
+                                    error: function () {
+                                        alert("Ajax failure");
+                                    }
+                                });
+                            }
+                            else {
+
+                            }
+
+                        });
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+        
+
+    });
+</script>

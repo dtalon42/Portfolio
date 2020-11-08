@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Specials";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+
+<p>Use this area to provide additional information.</p>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<style>
+    .row {
+        border:solid;
+        margin:auto;
+    }
+
+    i {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 50px;
+    }
+
+    #name{
+        font-weight:bold;
+    }
+</style>
+
+<div class="container" id="specialsContainer">
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getSpecials",
+                success: function (specialArray) {
+                    $.each(specialArray, function (index, special) {
+                        var id = special.special_ID;
+                        var name = special.name;
+                        var description = special.description;
+
+                        var newDiv = document.createElement("div");
+                        var iconColumn = document.createElement("div");
+                        var columnDiv = document.createElement("div");
+
+                        var h1 = document.createElement("p");
+
+                        var icon = document.createElement("i");
+                        icon.className = "glyphicon glyphicon-usd";
+
+                        h1.setAttribute("id", "name");
+
+                        var p1 = document.createElement("p");
+                        p1.setAttribute("id", "description");
+
+                        newDiv.className = "row";
+
+                        iconColumn.className = "col-med-1";
+                        iconColumn.appendChild(icon);
+                        newDiv.appendChild(iconColumn);
+
+                        columnDiv.id = id;
+                        columnDiv.className = "col";
+                        newDiv.appendChild(columnDiv);
+
+                        columnDiv.appendChild(h1);
+                        columnDiv.appendChild(p1);
+
+
+                        document.getElementById("specialsContainer").appendChild(newDiv);
+
+                        $('#' + id + " > #name").text(name);
+                        $('#' + id + " > #description").text(description);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+    });
+
+</script>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+
+    </div>
+</body>
+</html>

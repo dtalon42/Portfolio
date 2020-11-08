@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Inventory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Inventory</h2>
+
+<div class="container" id="newVehicles">
+    <p>New Vehicles</p>
+    <table class="table table-bordered" id="newTable">
+        <thead>
+            <tr>
+                <th scope="col">Year</th>
+                <th scope="col">Make</th>
+                <th scope="col">Model</th>
+                <th scope="col">Count</th>
+                <th scope="col">Stock Value</th>
+            </tr>
+        </thead>
+        <tbody id="invNew">
+        </tbody>
+    </table>
+</div>
+
+<div class="container" id="usedVehicles">
+    <p>Used Vehicles</p>
+    <table class="table table-bordered" id="usedTable">
+        <thead>
+            <tr>
+                <th scope="col">Year</th>
+                <th scope="col">Make</th>
+                <th scope="col">Model</th>
+                <th scope="col">Count</th>
+                <th scope="col">Stock Value</th>
+            </tr>
+        </thead>
+        <tbody id="invUsed">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getInvNew",
+                success: function (invArray) {
+                    $.each(invArray, function (index, invNew) {
+                        var year = invNew.year;
+                        var maker = invNew.make;
+                        var model = invNew.model;
+                        var invCount = invNew.inventoryCount;
+                        var stkVal = invNew.stockValue;
+
+                        var tableRow = document.createElement("tr");
+
+                        var td1 = document.createElement("td");
+                        td1.innerText = year;
+                        tableRow.appendChild(td1);
+
+                        var td2 = document.createElement("td");
+                        td2.innerText = maker;
+                        tableRow.appendChild(td2);
+
+                        var td3 = document.createElement("td");
+                        td3.innerText = model;
+                        tableRow.appendChild(td3);
+
+                        var td4 = document.createElement("td");
+                        td4.innerText = invCount;
+                        tableRow.appendChild(td4);
+
+                        var td5 = document.createElement("td");
+                        td5.innerText = "$" + stkVal;
+                        tableRow.appendChild(td5);
+
+                        var table = document.getElementById("newTable");
+                        $(table).find('tbody').append(tableRow);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getInvUsed",
+                success: function (invArray) {
+                    $.each(invArray, function (index, invUsed) {
+                        var year = invUsed.year;
+                        var maker = invUsed.make;
+                        var model = invUsed.model;
+                        var invCount = invUsed.inventoryCount;
+                        var stkVal = invUsed.stockValue;
+
+                        var tableRow = document.createElement("tr");
+
+                        var td1 = document.createElement("td");
+                        td1.innerText = year;
+                        tableRow.appendChild(td1);
+
+                        var td2 = document.createElement("td");
+                        td2.innerText = maker;
+                        tableRow.appendChild(td2);
+
+                        var td3 = document.createElement("td");
+                        td3.innerText = model;
+                        tableRow.appendChild(td3);
+
+                        var td4 = document.createElement("td");
+                        td4.innerText = invCount;
+                        tableRow.appendChild(td4);
+
+                        var td5 = document.createElement("td");
+                        td5.innerText = "$" + stkVal;
+                        tableRow.appendChild(td5);
+
+                        var table = document.getElementById("usedTable");
+                        $(table).find('tbody').append(tableRow);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+
+    });
+
+</script>

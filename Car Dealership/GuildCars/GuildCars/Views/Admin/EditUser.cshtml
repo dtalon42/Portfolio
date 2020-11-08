@@ -1,0 +1,87 @@
+﻿@model GuildCars.Models.ViewModels.Users 
+
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    var context = new GuildCars.Models.ApplicationDbContext();
+    var rolesList = (from userRole in context.Roles
+                     join role in context.Roles on userRole.Id
+                     equals role.Id
+                     select role.Name).ToList();
+}
+<style>
+    label, input {
+        display: block;
+    }
+
+    .col-med-6 {
+        margin-right: 40px;
+    }
+</style>
+
+<h2>Edit User</h2>
+
+
+<div class="container" id="errors">
+    <p id="confError"></p>
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+</div>
+<div class="container">
+    @using (Html.BeginForm("EditUser", "Admin"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.userId, new { @class = "form-control" })
+    <div class="row">
+        <div class="form-group">
+            @Html.LabelFor(m => m.firstName, new { @class = "col-md-6 control-label" })
+            <div class="col-med-6">
+                @Html.TextBoxFor(m => m.firstName, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.lastName, new { @class = "col-md-6 control-label" })
+            <div class="col-med-6">
+                @Html.TextBoxFor(m => m.lastName, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-6 control-label" })
+            <div class="col-med-6">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Role, new { @class = "col-md-6 control-label" })
+            <div class="col-med-6">
+                @Html.DropDownListFor(m => m.Role, new SelectList(rolesList, Model.Role))
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+    </div>
+}
+</div>
+
+<script>
+   /* $(document).ready(function () {
+        $("#confpw").change(function () {
+            if ($("#pwid").val() != $("#confpw").val()) {
+                document.getElementById("confError").innerHTML = "Password and confirmation do not match";
+            }
+            else {
+                $("#confError").empty();
+            }
+        });
+    });*/
+    
+
+</script>
+
+
+

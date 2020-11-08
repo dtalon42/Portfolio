@@ -1,0 +1,5 @@
+C:\Users\drago\source\repos\CDManager\CDManager.Models\bin\Debug\CDManager.Models.dll
+C:\Users\drago\source\repos\CDManager\CDManager.Models\bin\Debug\CDManager.Models.pdb
+C:\Users\drago\source\repos\CDManager\CDManager.Models\obj\Debug\CDManager.Models.csproj.CoreCompileInputs.cache
+C:\Users\drago\source\repos\CDManager\CDManager.Models\obj\Debug\CDManager.Models.dll
+C:\Users\drago\source\repos\CDManager\CDManager.Models\obj\Debug\CDManager.Models.pdb

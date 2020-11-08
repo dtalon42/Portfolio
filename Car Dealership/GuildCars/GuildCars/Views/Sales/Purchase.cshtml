@@ -1,0 +1,441 @@
+﻿@model GuildCars.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Purchase";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Purchase Vehicle</h2>
+
+<style>
+    img {
+        height: 128px;
+        width: 128px;
+    }
+
+    #vDesc {
+        text-align: center;
+    }
+
+    #contact {
+        float: right;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    label, input {
+        display: block;
+    }
+
+    hr {
+        border-top: 1px solid black;
+    }
+
+    #detailsContainer {
+        border: 1px solid black;
+        margin-bottom: 10px;
+    }
+</style>
+<div class="container">
+    <div id="error"></div>
+</div>
+
+<div class="container" id="detailsContainer">
+
+
+</div>
+
+<div class="container" id="salesContainer">
+    <h2>Sales Information</h2>
+
+    <form id="purchaseForm">
+        <div class="row" id="namePhoneRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required/>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="phone">Phone</label>
+                        <input type="text" id="phone" name="phone" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row" id="emailRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="email">Email</label>
+                        <input type="text" id="email" name="email" />
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+        </div>
+        <div class="row" id="streetRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="street1">Street 1</label>
+                        <input type="text" id="street1" name="street1" required/>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="street2">Street 2</label>
+                        <input type="text" id="street2" name="street2" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row" id="cityStateRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" required/>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="state">State</label>
+                        <select name="state" class="custom-select" id="state" required>
+                            <option selected>State</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row" id="zipcodeRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="zipcode">Zipcode</label>
+                        <input type="number" id="zipcode" name="zipcode" required/>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+        </div>
+        <hr />
+        <div class="row" id="purchaseDataRow">
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="purchasePrice">Purchase Price</label>
+                        <input type="number" id="purchasePrice" name="purchasePrice" required/>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul id="purchaseData">
+                    <li>
+                        <label for="purchaseType">Purchase Type</label>
+                        <select name="purchaseType" class="custom-select" id="purchaseType" required>
+                            <option selected>Purchase Type</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <button type="submit" id="submitPurchase" name="submitPurchase">Save</button>
+            </div>
+            <div class="col-md-6">
+                @Html.HiddenFor(m => m.Email, new { @class = "form-control", id = "userEmail" })
+            </div>
+        </div>
+        
+    </form>
+
+    
+
+
+</div>
+
+<script>
+    function emailIsValid(email) {
+        return /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email);
+    }
+
+    $(document).ready(function () {
+        var detailParam = window.location.href;
+        var carId = detailParam[detailParam.length - 1];
+
+
+
+        const form = document.getElementById('purchaseForm');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const zipcode = document.getElementById('zipcode');
+        const purchasePrice = document.getElementById('purchasePrice');
+        const errorElement = document.getElementById('error');
+
+
+
+        form.addEventListener('submit', (e) => {
+            let messages = [];
+            if ((email.value === '' || email.value == null) && (phone.value === '' || phone.value == null)) {
+                messages.push('Email or phone number is required');
+            }
+            if (!emailIsValid(email.value)) {
+                messages.push('Email is in an invalid format');
+            }
+            if ($("#zipcode").val().length != 5) {
+                messages.push('Zipcode must be 5 digits long');
+            }
+            if ($("#purchasePrice").val() > $("#msrp").val() || $("#purchasePrice").val() < ($("#sale").val() * 0.95)) {
+                messages.push('Purchase price invalid. Check msrp or sale price.');
+            }
+            if ($("#state").val() == "State") {
+                messages.push('Please pick a state');
+            }
+            if ($("#purchaseType").val() == "Purchase Type") {
+                messages.push('Please select the method of purchase');
+            }
+            if (messages.length > 0) {
+                e.preventDefault();
+                errorElement.innerText = messages.join('. \n');
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "https://localhost:44318/api/addSale",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "vehicle_ID": carId,
+                        "name": $('#name').val(), "email": $('#email').val(), "phone": $('#phone').val(), "street_1": $('#street1').val(),
+                        "street_2": $('#street2').val(), "city": $('#city').val(), "state_ID": $('#state').val(), "zipCode": $('#zipcode').val(),
+                        "purchasePrice": $('#purchasePrice').val(), "purchaseType_ID": $('#purchaseType').val(), "userAdded": $("#userEmail").val()
+                    }),
+                    success: function (data, textStatus, jQxr) {
+                        $('#purchaseForm').html(JSON.stringify(data));
+                        
+                    },
+                    error: function (jqXr, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            }
+        });
+        if (Number.isInteger(parseInt(carId, 10))) {
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "https://localhost:44318/api/getVehicleDetails/" + carId,
+                    success: function (vehicle) {
+
+                        var id = vehicle.vehicle_ID;
+                        var year = vehicle.year;
+                        var make = vehicle.make;
+                        var model = vehicle.model;
+                        var carType = vehicle.carType;
+                        var bodyStyle = vehicle.bodyStyle;
+                        var transmission = vehicle.transmission;
+                        var outerColor = vehicle.outerColor;
+                        var interior = vehicle.interior;
+                        var mileage = vehicle.mileage;
+                        var vin = vehicle.vin;
+                        var salePrice = vehicle.salePrice;
+                        var msrp = vehicle.msrp;
+                        var picture = vehicle.picture;
+                        var description = vehicle.description;
+                        var saleID = vehicle.saleID;
+
+                        var containerRow = document.createElement("div");
+                        containerRow.className = "row";
+                        containerRow.id = id;
+
+                        var containerRow2 = document.createElement("div");
+                        containerRow2.className = "row";
+                        containerRow2.id = "row2";
+
+                        var containerRow3 = document.createElement("div");
+                        containerRow3.className = "row";
+                        containerRow3.id = "row3";
+
+                        var container = document.getElementById("detailsContainer");
+                        container.appendChild(containerRow);
+                        container.appendChild(containerRow2);
+                        container.appendChild(containerRow3);
+
+                        var row2column1 = document.createElement("div");
+                        row2column1.className = "col";
+
+                        var row3column1 = document.createElement("div");
+                        row3column1.className = "col";
+
+                        var desc = document.createElement("p");
+                        desc.id = "vDesc";
+                        $(desc).text("Description: " + description);
+                        row2column1.appendChild(desc);
+
+                        var image = document.createElement("img");
+                        image.src = picture;
+
+                        var column1 = document.createElement("div");
+                        column1.className = "col";
+
+                        var makeModelYear = document.createElement("p");
+                        makeModelYear.id = "makeModelYear";
+
+                        column1.appendChild(makeModelYear);
+                        column1.appendChild(image);
+
+                        /////////////////////////////////////////////
+
+                        var column2 = document.createElement("div");
+                        column2.className = "col";
+
+                        var body = document.createElement("p")
+                        body.id = "body";
+
+                        var trans = document.createElement("p");
+                        trans.id = "trans";
+
+                        var color = document.createElement("p");
+                        color.id = "color";
+
+                        column2.appendChild(body);
+                        column2.appendChild(trans);
+                        column2.appendChild(color);
+
+                        /////////////////////////////////////////////
+
+                        var column3 = document.createElement("div");
+                        column3.className = "col";
+
+                        var carInterior = document.createElement("p");
+                        carInterior.id = "interior";
+
+                        var miles = document.createElement("p");
+
+                        if (mileage > 0 && mileage < 1000) {
+                            $(miles).text("Mileage: New");
+                        }
+                        else {
+                            $(miles).text("Mileage: " + mileage);
+                        }
+
+
+                        var vinNumber = document.createElement("p");
+                        vinNumber.id = "vin";
+
+                        column3.appendChild(carInterior);
+                        column3.appendChild(miles);
+                        column3.appendChild(vinNumber);
+
+                        ////////////////////////////////////////////
+
+                        var column4 = document.createElement("div");
+                        column4.className = "col";
+
+                        var sale = document.createElement("p");
+                        sale.id = "sale";
+                        sale.value = salePrice;
+
+                        var manPrice = document.createElement("p");
+                        manPrice.id = "msrp";
+                        manPrice.value = msrp;
+
+                        column4.appendChild(sale);
+                        column4.appendChild(manPrice);
+
+                        containerRow.appendChild(column1);
+                        containerRow.appendChild(column2);
+                        containerRow.appendChild(column3);
+                        containerRow.appendChild(column4);
+
+                        containerRow2.appendChild(row2column1);
+                        containerRow3.appendChild(row3column1);
+
+                        $("#makeModelYear").text(year + ' ' + make + ' ' + model);
+
+                        $("#body").text("Body Style: " + bodyStyle);
+                        $("#trans").text("Trans: " + transmission);
+                        $("#color").text("Color: " + outerColor);
+
+                        $("#interior").text("Interior: " + interior);
+
+                        $("#vin").text("VIN #: " + vin);
+
+                        $("#sale").text("Sale Price: $" + salePrice);
+                        $("#msrp").text("MSRP: $" + msrp);
+                    },
+                    error: function () {
+                        alert("Ajax failure");
+                    }
+
+
+                });
+        }
+        else {
+            window.location.href = "/Sales/Index";
+        }
+        
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44318/api/getState/",
+            success: function (stateArray) {
+                $.each(stateArray, function (index, state) {
+                    var id = state.state_ID;
+                    var stateName = state.state;
+
+                    var stateSelect = document.getElementById("state");
+                    var option = document.createElement("option");
+                    option.value = id;
+                    option.text = stateName;
+                    stateSelect.add(option);
+
+                });
+            },
+            error: function () {
+                alert("Ajax failure");
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44318/api/getPurchaseType/",
+            success: function (pTypeArray) {
+                $.each(pTypeArray, function (index, pType) {
+                    var id = pType.purchaseType_ID;
+                    var purchaseType = pType.purchaseType;
+
+                    var purchaseSelect = document.getElementById("purchaseType");
+                    var option = document.createElement("option");
+                    option.value = id;
+                    option.text = purchaseType;
+                    purchaseSelect.add(option);
+
+                });
+            },
+            error: function () {
+                alert("Ajax failure");
+            }
+        });
+
+    });
+</script>
+
+

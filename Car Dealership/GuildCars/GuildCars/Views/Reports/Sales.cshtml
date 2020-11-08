@@ -1,0 +1,146 @@
+﻿@model List<GuildCars.Models.ApplicationUser>
+@{
+    ViewBag.Title = "Sales";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    button {
+        width: 45%;
+    }
+
+    select {
+        margin-bottom: 15px;
+    }
+</style>
+<h2>Sales</h2>
+
+<div class="container">
+    <div class="row">
+        <p>Filters</p>
+    </div>
+    <form id="salesForm">
+        <div class="row">
+
+            <div class="col">
+                <label for="user">User</label>
+            </div>
+            <div class="col">
+                <select name="user" class="custom-select" id="user">
+                    <option selected value="">- All -</option>
+                    @{
+                        foreach (var user in Model)
+                        {
+                            <option value="@user.Email">@(user.firstName + " " + user.lastName)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col">
+                <label for="fromDate">From Date</label>
+            </div>
+            <div class="col">
+                <input type="date" id="fakeFromDate" name="fromDate" />
+                <input type="hidden" id="fromDate" value="2000/01/01" />
+            </div>
+            <div class="col">
+                <label for="toDate">To Date</label>
+            </div>
+            <div class="col">
+                <input type="date" id="fakeToDate" name="toDate" />
+                <input type="hidden" id="toDate" value="2100/01/01" />
+            </div>
+
+        </div>
+    </form>
+        <div class="row">
+            <div class="col">
+                <button type="submit" id="submitSales">Search</button>
+            </div>
+
+        </div>
+
+    
+    
+</div>
+
+<div class="container">
+    <p>Search Results</p>
+    <table class="table table-bordered" id="salesTable">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Total Sales</th>
+                <th scope="col">Total Vehicles</th>
+            </tr>
+        </thead>
+        <tbody id="salesData">
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#fakeFromDate').change(function () {
+            var user_input = $('#fakeFromDate').val();
+            $('#fromDate').val(user_input);
+            if ($('#fakeFromDate').val() === 0 || $('#fakeFromDate').val() == null) {
+                $('#fromDate').val('2000/01/01');
+            }
+        });
+        $('#fakeToDate').change(function () {
+            var user_input = $('#fakeToDate').val();
+            $('#toDate').val(user_input);
+            if ($('#fakeToDate').val() === 0 || $('#fakeToDate').val() == null) {
+                $('#toDate').val('2100/01/01');
+            }
+        });
+
+        $("#submitSales").click(function () {
+            $("#salesData").empty();
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "https://localhost:44318/api/getSalesRpt",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "email": $("#user").val(), "fromDate": $("#fromDate").val(), "toDate": $("#toDate").val()
+                    }),
+                    success: function (salesArray) {
+                        $.each(salesArray, function (index, sales) {
+                            var name = sales.firstName + " " + sales.lastName;
+                            var totalSales = sales.totalSales;
+                            var vehiclesSold = sales.vehiclesSold;
+
+                            var tableRow = document.createElement("tr");
+
+                            var td1 = document.createElement("td");
+                            td1.innerText = name;
+                            tableRow.appendChild(td1);
+
+                            var td2 = document.createElement("td");
+                            td2.innerText = "$" + totalSales;
+                            tableRow.appendChild(td2);
+
+                            var td3 = document.createElement("td");
+                            td3.innerText = vehiclesSold;
+                            tableRow.appendChild(td3);
+
+                            var table = document.getElementById("salesTable");
+                            $(table).find('tbody').append(tableRow);
+
+                        });
+                    },
+                    error: function () {
+                        alert("Ajax failure");
+                    }
+                });
+
+        });
+        
+
+
+    });
+</script>
+

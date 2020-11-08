@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,KF,OH,6.25,Tile,101,3.50,4.15,353.50,419.15,48.290625,820.940625

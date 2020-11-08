@@ -1,0 +1,8 @@
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\bin\Debug\GuildCars.Models.dll
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\bin\Debug\GuildCars.Models.pdb
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\bin\Debug\System.ComponentModel.Annotations.dll
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\obj\Debug\GuildCars.Models.csprojAssemblyReference.cache
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\obj\Debug\GuildCars.Models.csproj.CoreCompileInputs.cache
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\obj\Debug\GuildCars.Models.csproj.CopyComplete
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\obj\Debug\GuildCars.Models.dll
+C:\Users\drago\source\repos\GuildCars II\GuildCars\GuildCars.Models\obj\Debug\GuildCars.Models.pdb

@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,KF2,MI,5.75,Laminate,125,1.75,2.10,218.75,262.50,27.671875,508.921875

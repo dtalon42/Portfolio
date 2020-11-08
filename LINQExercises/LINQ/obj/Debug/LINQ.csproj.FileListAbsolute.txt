@@ -1,0 +1,9 @@
+D:\Git\Curriculum\dotnet\ObjectOrientedProgramming\03-Collections-LINQ-SystemIO-DateTime\Asssessments\LINQ\LINQ\bin\Debug\LINQ.exe.config
+C:\Users\drago\Downloads\LINQExercises\LINQ\bin\Debug\Customers.xml
+C:\Users\drago\Downloads\LINQExercises\LINQ\bin\Debug\LINQ.exe.config
+C:\Users\drago\Downloads\LINQExercises\LINQ\bin\Debug\LINQ.exe
+C:\Users\drago\Downloads\LINQExercises\LINQ\bin\Debug\LINQ.pdb
+C:\Users\drago\Downloads\LINQExercises\LINQ\obj\Debug\LINQ.csproj.CoreCompileInputs.cache
+C:\Users\drago\Downloads\LINQExercises\LINQ\obj\Debug\LINQ.exe
+C:\Users\drago\Downloads\LINQExercises\LINQ\obj\Debug\LINQ.pdb
+C:\Users\drago\Downloads\LINQExercises\LINQ\obj\Debug\LINQ.csprojAssemblyReference.cache

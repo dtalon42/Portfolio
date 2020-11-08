@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+    #myCarousel
+    {
+        background-color:cornflowerblue;
+    }
+    .col-2 {
+        border:solid;
+        width: 25%;
+    }
+
+    img {
+        width: 128px;
+        height: 128px;
+    }
+
+
+</style>
+
+
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      @Html.Hidden("RedirectTo", Url.Action("Specials", "Home"))
+    <div class="carousel-inner" id="specialCarousel">
+        <div class="carousel-item active">
+            <h1>Big Sale! Everything must go!</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row" id="featuredVehicles">
+
+    </div>
+</div>
+
+
+
+
+
+  <script>
+      var url = $("#RedirectTo").val();
+    $(document).ready(function () {
+        $.ajax(
+            {
+                type: "GET",
+                url: "https://localhost:44318/api/getSpecials",
+                success: function (specialArray) {
+                    $.each(specialArray, function (index, special) {
+                        var id = special.special_ID;
+                        var name = special.name;
+                        var description = special.description;
+
+                        var newDiv = document.createElement("div");
+                        var h1 = document.createElement("h1");
+                        h1.setAttribute("id", "name");
+
+                        var p1 = document.createElement("p");
+                        p1.setAttribute("id", "description");
+
+                        newDiv.id = id;
+                        newDiv.className = "carousel-item";
+                        newDiv.appendChild(h1);
+                        newDiv.appendChild(p1);
+
+                        document.getElementById("specialCarousel").appendChild(newDiv);
+
+                        $('#' + id + " > #name").text(name);
+                        $('#' + id + " > #description").text(description);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44318/api/getFeatured",
+            success: function (featuredArray)
+            {
+                $.each(featuredArray, function (index, featured)
+                {
+                    var id = index + 'a';
+                    var year = featured.year;
+                    var make = featured.make;
+                    var model = featured.model;
+                    var price = featured.price;
+                    var icon = featured.picture; 
+
+                    var newDiv = document.createElement("div");
+                    var image = document.createElement("img");
+                    var h6 = document.createElement("h6");
+                    var p1 = document.createElement("p");
+
+                    p1.setAttribute("id", "price");
+                    h6.setAttribute("id", "description");
+                    image.src = icon;
+
+                    newDiv.id = id;
+                    newDiv.className = "col-2";
+                    newDiv.appendChild(image);
+                    newDiv.appendChild(h6);
+                    newDiv.appendChild(p1);
+                    
+
+                    document.getElementById("featuredVehicles").appendChild(newDiv);
+                    $('#' + id + " > #description").text(year + ' ' + make + ' ' + model);
+                    $('#' + id + " > #price").text('$'+ price);
+
+
+
+                });
+            },
+            error: function () {
+                alert("Ajax failure");
+            }
+        });
+
+        $("#myCarousel").on("click", function () {
+            location.href = url;
+        });
+
+    });
+
+  </script>

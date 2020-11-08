@@ -1,0 +1,650 @@
+﻿
+@{
+    ViewBag.Title = "EditVehicle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EditVehicle</h2>
+
+<style>
+    label, input {
+        display: block;
+    }
+
+    input {
+        width: 100%;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    img {
+        width: 128px;
+        height: 128px;
+    }
+
+    .custom-file {
+        width: 25%;
+    }
+
+    label, textarea {
+        display: block;
+    }
+
+    textarea {
+        width: 100%;
+    }
+
+    select {
+        margin-bottom: 15px;
+    }
+
+    #color {
+        margin-top: 15px;
+    }
+
+    .custom-file {
+        float: right;
+    }
+
+    div.col-med-4 {
+        width: 600px;
+    }
+    
+    #featured {
+        margin-left: -150px;
+    }
+
+    #submitVehicle {
+        margin-top: 15px;
+    }
+
+    #deleteVehicle {
+        margin-top: 15px;
+        background-color:red;
+    }
+</style>
+
+<div class="container" id="error">
+
+</div>
+
+<div class="container">
+    <form id="vehicleForm">
+        <div class="row">
+            <div class="col-6">
+                <ul id="column1">
+                    <li>
+                        <select name="make" class="custom-select" id="make">
+                            <option selected>Make</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <select name="type" class="custom-select" id="type">
+                            <option selected>Type</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+
+                    </li>
+                    <li>
+                        <label for="year">Year</label>
+                        <input type="text" id="year" name="year" required />
+                    </li>
+                    <li>
+                        <select name="color" class="custom-select" id="color">
+                            <option selected>Color</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <label for="mileage">Mileage</label>
+                        <input type="text" id="mileage" name="mileage" required />
+                    </li>
+                    <li>
+                        <label for="msrp">MSRP</label>
+                        <input type="text" id="msrp" name="msrp" required />
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6">
+                <ul id="column2">
+                    <li>
+                        <select name="model" class="custom-select" id="model">
+                            <option selected>Model</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <select name="bodyStyle" class="custom-select" id="bodyStyle">
+                            <option selected>Body Style</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <select name="transmission" class="custom-select" id="transmission">
+                            <option selected>Transmission</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <select name="interior" class="custom-select" id="interior">
+                            <option selected>Interior</option>
+                            <!--<option value="1">Volvo</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <label for="vinNumber">VIN #</label>
+                        <input type="text" id="vinNumber" name="vinNumber" required />
+                    </li>
+                    <li>
+                        <label for="salePrice">Sale Price</label>
+                        <input type="text" id="salePrice" name="salePrice" required />
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <ul>
+                <li>
+                    <label for="description">Description</label>
+                </li>
+                <li>
+                    <textarea id="description" required></textarea>
+                </li>
+            </ul>
+        </div>
+        <br />
+        <div class="row" id="currentPicture">
+
+        </div>
+        <br />
+        <div class="row">
+
+            <div class="custom-file">
+
+                <input type="file" class="custom-file-input" id="customFile">
+                <label class="custom-file-label" for="customFile">Replace Picture</label>
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="container">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="featured" name="featured" value="true" />
+                    <label for="featured" class="form-check-label">Feature this vehicle</label>
+
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="row">
+            <div class="col-1">
+                <button type="button" id="deleteVehicle" name="deleteVehicle">Delete</button>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="submitVehicle" name="submitVehicle">Save</button>
+            </div>
+
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+
+    function fileExtensionIsValid(fileName) {
+        var i; var j;
+        var validString = "";
+        var validExtensions = ["png", "jpg", "jpeg"];
+        for (i = fileName.length - 1; i > 0; i--) {
+            if (fileName[i] === ".") {
+                validString = validString.split("").reverse().join("").toLowerCase();
+                break;
+            }
+            else {
+                validString = validString + fileName[i];
+            }
+        }
+        for (j = 0; j < validExtensions.length; j++) {
+            if (validString == validExtensions[j]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function getImageNumber() {
+        var fileNum;
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "https://localhost:44318/api/getFileNumber/",
+            success: function (data) {
+                fileNum = data;
+            },
+            error: function () { }
+
+        });
+
+        return fileNum;
+    }
+
+    $(document).ready(function () {
+        $("#featured").val(false);
+        $("#featured").change(function () {
+            $("#featured").val(this.checked);
+        });
+
+        var editParam = window.location.href;
+        var vehicleId = editParam[editParam.length - 1];
+
+        
+            $(".custom-file-input").on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+
+            $("#deleteVehicle").click(function () {
+                var conf = confirm("Delete this vehicle?");
+                if (conf == true) {
+                    $.ajax({
+                        url: 'https://localhost:44318/api/deleteVehicle/' + vehicleId,
+                        type: 'DELETE',
+                        contentType: 'application/json',
+                        success: function () {
+                            window.location.href = '/Admin/Vehicles';
+                        },
+                        error: function () {
+                            alert("Ajax failure");
+                        }
+                    });
+                }
+                else {
+
+                }
+            });
+
+            var curDate = new Date();
+
+            const form = document.getElementById('vehicleForm');
+
+            const makeVal = document.getElementById('make');
+            const modelVal = document.getElementById('model');
+
+            const typeVal = document.getElementById('type');
+            const bodyVal = document.getElementById('bodyStyle');
+
+            const yearVal = document.getElementById('year');
+            const transVal = document.getElementById('transmission');
+
+            const colorVal = document.getElementById('color');
+            const interiorVal = document.getElementById('interior');
+
+            const mileageVal = document.getElementById('mileage');
+            const vinVal = document.getElementById('vinNumber');
+
+            const msrpVal = document.getElementById('msrp');
+            const saleVal = document.getElementById('salePrice');
+
+            const fileNameVal = document.getElementById('customFile');
+
+            const errorElement = document.getElementById('error');
+
+            form.addEventListener('submit', (e) => {
+                let messages = [];
+                if (makeVal.value === 'Make' || modelVal.value === 'Model') {
+                    messages.push('Make or model choice not selected');
+                }
+                if (typeVal.value === 'Type' || bodyVal.value === 'Body Style') {
+                    messages.push('Type or body style choice not selected');
+                }
+                if (transVal.value === 'Transmission' || colorVal.value === 'Color') {
+                    messages.push('Transmission type or color choice not selected');
+                }
+                if (interiorVal.value === 'Interior') {
+                    messages.push('Interior choice not selected');
+                }
+                if (yearVal.value < 2000 || yearVal.value > (curDate.getFullYear() + 1)) {
+                    messages.push('Invalid date. Valid dates are between 2000 and current year plus 1');
+                }
+                if (typeVal.value == 1 && (mileageVal.value > 1000 || mileageVal.value < 0)) { // type will read new
+                    messages.push('Type and mileage mismatch. If new, mileage must be between 0 and 1000 miles');
+                }
+                if (typeVal.value == 2 && (mileageVal.value < 1000)) { // type will read used
+                    messages.push('Type and mileage mismatch. If Used, mileage must be greater than 1000 miles');
+                }
+                if (vinVal.value.length != 17) {
+                    messages.push('VIN number must be 17 characters long');
+                }
+                if (msrpVal.value < 0 || saleVal.value < 0 || saleVal.value > msrpVal.value) {
+                    messages.push('MSRP and Sale Price error. Both must be positive and Sale Price may not be greater than MSRP');
+                }
+                if (fileNameVal.value == '' || fileNameVal.value == null) {
+
+                } else {
+                    if (!fileExtensionIsValid(fileNameVal.value)) {
+                        messages.push('Invalid file type detected. Valid types are jpg, png, and jpeg');
+                    }
+                }
+
+                if (messages.length > 0) {
+                    e.preventDefault();
+                    errorElement.innerText = messages.join('. \n');
+                }
+                else {
+                    if (fileNameVal.value == '' || fileNameVal.value == null) {
+                        
+                    } else {
+                        const getFile = document.getElementById("customFile").files[0];
+                        var filename = getFile.name.split(".").pop();
+                        var sendFile = new File([getFile], "inventory-" + vehicleId + "." + filename);
+                        var formData = new FormData();
+                        formData.append("File", sendFile);
+                        formData.append("Name", sendFile.name);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "https://localhost:44318/api/addFile",
+                            beforeSend: function () { },
+                            success: function (result) { console.log(result); },
+                            xhr: function () {
+                                var myXhr = $.ajaxSettings.xhr();
+                                if (myXhr.upload) { }
+                                return myXhr;
+                            },
+                            error: function () { alert("file send error"); },
+                            data: formData,
+                            cache: false,
+                            contentType: false,
+                            processData: false
+
+                        });
+                        $.ajax({
+                            type: "PUT",
+                            url: "https://localhost:44318/api/editVehicle",
+                            contentType: "application/json",
+                            processData: false,
+                            async: false,
+                            data: JSON.stringify({
+                                "vehicle_ID": vehicleId,
+                                "make_ID": $("#make").val(), "model_ID": $("#model").val(), "type_ID": $("#type").val(),
+                                "body_ID": $("#bodyStyle").val(), "transmission_ID": $("#transmission").val(), "color_ID": $("#color").val(),
+                                "interior_ID": $("#interior").val(), "year": $("#year").val(), "mileage": $("#mileage").val(),
+                                "vinNumber": $("#vinNumber").val(), "msrp": $("#msrp").val(), "salePrice": $("#salePrice").val(),
+                                "description": $("#description").val(), "picture": "/Images/" + sendFile.name, "featured": $("#featured").val()
+                            }),
+                            success: function (data, textStatus, jQxr) {
+                                console.log("vehicle edited");
+                            },
+                            error: function (jqXr, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        });
+                    }
+                    $.ajax({
+                        type: "PUT",
+                        url: "https://localhost:44318/api/editVehicle",
+                        contentType: "application/json",
+                        processData: false,
+                        async: false,
+                        data: JSON.stringify({
+                            "vehicle_ID": vehicleId,
+                            "make_ID": $("#make").val(), "model_ID": $("#model").val(), "type_ID": $("#type").val(),
+                            "body_ID": $("#bodyStyle").val(), "transmission_ID": $("#transmission").val(), "color_ID": $("#color").val(),
+                            "interior_ID": $("#interior").val(), "year": $("#year").val(), "mileage": $("#mileage").val(),
+                            "vinNumber": $("#vinNumber").val(), "msrp": $("#msrp").val(), "salePrice": $("#salePrice").val(),
+                            "description": $("#description").val(), "picture": $("#vehiclePicture").attr('src'), "featured": $("#featured").val()
+                        }),
+                        success: function (data, textStatus, jQxr) {
+                            console.log("vehicle edited");
+                        },
+                        error: function (jqXr, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                    
+
+                }
+            });
+        
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getMake/",
+                success: function (makeArray) {
+                    $.each(makeArray, function (index, make) {
+                        var id = make.make_ID;
+                        var makeName = make.make;
+
+                        var makeSelect = document.getElementById("make");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = makeName;
+                        makeSelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $("#make").change(function () { // removes unnecessary options in model on make change and populates model
+                var select = document.getElementById("model");
+                var length = select.options.length;
+                for (i = length - 1; i > 0; i--) {
+                    select.options[i] = null;
+                }
+                if ($("#make").val() != 'Make') {
+                    $.ajax({
+                        type: "GET",
+                        url: "https://localhost:44318/api/getModel/" + $("#make").val(),
+                        success: function (modelArray) {
+                            $.each(modelArray, function (index, model) {
+                                var id = model.model_ID;
+                                var modelName = model.model;
+
+                                var modelSelect = document.getElementById("model");
+                                var option = document.createElement("option");
+                                option.value = id;
+                                option.text = modelName;
+                                modelSelect.add(option);
+
+                            });
+                        },
+                        error: function () {
+                            alert("Ajax failure");
+                        }
+                    });
+                }
+
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getType/",
+                success: function (typeArray) {
+                    $.each(typeArray, function (index, type) {
+                        var id = type.type_ID;
+                        var typeName = type.carType;
+
+                        var typeSelect = document.getElementById("type");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = typeName;
+                        typeSelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getBodyStyle/",
+                success: function (bodyArray) {
+                    $.each(bodyArray, function (index, body) {
+                        var id = body.body_ID;
+                        var bodyName = body.bodyStyle;
+
+                        var bodySelect = document.getElementById("bodyStyle");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = bodyName;
+                        bodySelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getTransmission/",
+                success: function (transArray) {
+                    $.each(transArray, function (index, trans) {
+                        var id = trans.transmission_ID;
+                        var transName = trans.transmission;
+
+                        var transSelect = document.getElementById("transmission");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = transName;
+                        transSelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getColor/",
+                success: function (colorArray) {
+                    $.each(colorArray, function (index, color) {
+                        var id = color.color_ID;
+                        var colorName = color.color;
+
+                        var colorSelect = document.getElementById("color");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = colorName;
+                        colorSelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getInterior/",
+                success: function (interiorArray) {
+                    $.each(interiorArray, function (index, interior) {
+                        var id = interior.interior_ID;
+                        var interiorName = interior.interior;
+
+                        var interiorSelect = document.getElementById("interior");
+                        var option = document.createElement("option");
+                        option.value = id;
+                        option.text = interiorName;
+                        interiorSelect.add(option);
+
+                    });
+                },
+                error: function () {
+                    alert("Ajax failure");
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44318/api/getVehicle/" + vehicleId,
+                success: function (vehicle) {
+                    var id = vehicle.vehicle_ID;
+                    var year = vehicle.year;
+                    var make = vehicle.make_ID;
+                    var model = vehicle.model_ID;
+                    var carType = vehicle.type_ID;
+                    var bodyStyle = vehicle.body_ID;
+                    var transmission = vehicle.transmission_ID;
+                    var outerColor = vehicle.color_ID;
+                    var interior = vehicle.interior_ID;
+                    var mileage = vehicle.mileage;
+                    var vin = vehicle.vinNumber;
+                    var salePrice = vehicle.salePrice;
+                    var msrp = vehicle.msrp;
+                    var picture = vehicle.picture;
+                    var description = vehicle.description;
+
+                    $("#make").val(make);
+
+                    $.ajax({
+                        type: "GET",
+                        async: false,
+                        url: "https://localhost:44318/api/getModel/" + make,
+                        success: function (modelArray) {
+                            $.each(modelArray, function (index, model) {
+                                var id = model.model_ID;
+                                var modelName = model.model;
+
+                                var modelSelect = document.getElementById("model");
+                                var option = document.createElement("option");
+                                option.value = id;
+                                option.text = modelName;
+                                modelSelect.add(option);
+
+                            });
+                        },
+                        error: function () {
+                            alert("ajax failure");
+                        }
+                    });
+
+                    var image = document.createElement("img");
+                    image.src = picture;
+                    image.id = "vehiclePicture";
+
+                    $("#model").val(model);
+                    $("#type").val(carType);
+                    $("#bodyStyle").val(bodyStyle);
+
+                    $("#year").val(year);
+                    $("#transmission").val(transmission);
+                    $("#color").val(outerColor);
+                    $("#interior").val(interior);
+
+                    $("#mileage").val(mileage);
+                    $("#vinNumber").val(vin);
+                    $("#msrp").val(msrp);
+                    $("#salePrice").val(salePrice);
+
+                    $("#description").val(description);
+
+                    var currentPicture = document.getElementById("currentPicture");
+                    currentPicture.appendChild(image);
+
+                },
+                error: function () {
+                    window.location.href = '/Admin/Vehicles/';
+                }
+            })
+  
+
+
+    });
+</script>

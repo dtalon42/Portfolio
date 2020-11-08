@@ -1,0 +1,264 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<style>
+    input[type=number] {
+        width: 150%;
+    }
+
+    input[type=text] {
+        width: 60%;
+    }
+
+    button {
+        width: 75%;
+    }
+
+    img {
+        width: 128px;
+        height: 128px;
+    }
+
+    #searchContainer > .row {
+        border: solid;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row" style="margin:auto">
+        <div class="col">
+            <form action="/" id="searchForm">
+                <label for="searchString">Quick Search</label>
+                <div class="row">
+                    
+                    <input type="text" id="searchString" name="searchString" placeholder="Enter make, model, or year" />
+                    <div class="col-md-1 text-right">
+                        <label for="fakeMinPrice">Price</label>
+
+                    </div>
+                    <div class="col-md-1">
+                        <input type="number" id="fakeMinPrice" placeholder="No Min" />
+                        <input type="hidden" id="minPrice" name="minPrice" value="0" />
+
+                    </div>
+                    <div class="col-md-1">
+                        <input type="number" id="fakeMaxPrice" placeholder="No Max" />
+                        <input type="hidden" id="maxPrice" name="maxPrice" value="1000000" />
+                    </div>
+                    <div class="col-md-1 text-right">
+                        <label for="fakeMinYear">Year</label>
+                    </div>
+                    <div class="col-md-1">
+                        <input type="number" id="fakeMinYear" placeholder="No Min" />
+                        <input type="hidden" id="minYear" name="minYear" value="2000" />
+                    </div>
+                    <div class="col-md-1">
+                        <input type="number" id="fakeMaxYear" placeholder="No Max" />
+                        <input type="hidden" id="maxYear" name="maxYear" value="2100" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col">
+
+        </div>
+        <div class="col">
+            <button type="submit" id="submitSearch">Search</button>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container" id="searchContainer">
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        var txt = "<h2>Search Results</h2>"
+        $('#fakeMinPrice').change(function () {
+            var user_input = $('#fakeMinPrice').val();
+            $('#minPrice').val(user_input);
+            if ($('#fakeMinPrice').val() === 0 || $('#fakeMinPrice').val() == null || $("#fakeMinPrice").val() == "") {
+                $('#minPrice').val(0);
+            }
+        });
+        $('#fakeMaxPrice').change(function () {
+            var user_input = $('#fakeMaxPrice').val();
+            $('#maxPrice').val(user_input);
+            if ($('#fakeMaxPrice').val() === 0 || $('#fakeMaxPrice').val() == null || $("#fakeMaxPrice").val() == "") {
+                $('#minPrice').val(1000000);
+            }
+        });
+        $('#fakeMinYear').change(function () {
+            var user_input = $('#fakeMinYear').val();
+            $('#minYear').val(user_input);
+            if ($('#fakeMinYear').val() === 0 || $('#fakeMinYear').val() == null || $("#fakeMinYear").val() == "") {
+                $('#minYear').val(2000);
+            }
+        });
+        $('#fakeMaxYear').change(function () {
+            var user_input = $('#fakeMaxYear').val();
+            $('#maxYear').val(user_input);
+            if ($('#fakeMaxYear').val() === 0 || $('#fakeMaxYear').val() == null || $("#fakeMaxYear").val() == "") {
+                $('#maxYear').val(2100);
+            }
+        });
+
+        $("#submitSearch").click(function () {
+            $("#searchContainer").empty();
+            $("#searchContainer").append(txt);
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "https://localhost:44318/api/getAvailableVehicles",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "searchString": $('#searchString').val(), "minPrice": $('#minPrice').val(),
+                        "maxPrice": $('#maxPrice').val(), "minYear": $('#minYear').val(), "maxYear": $('#maxYear').val()
+                    }),
+                    success: function (vehicleArray) {
+                        $.each(vehicleArray, function (index, vehicle) {
+                            var id = vehicle.vehicle_ID;
+                            var year = vehicle.year;
+                            var make = vehicle.make;
+                            var model = vehicle.model;
+                            var carType = vehicle.carType;
+                            var bodyStyle = vehicle.bodyStyle;
+                            var transmission = vehicle.transmission;
+                            var outerColor = vehicle.outerColor;
+                            var interior = vehicle.interior;
+                            var mileage = vehicle.mileage;
+                            var vin = vehicle.vin;
+                            var salePrice = vehicle.salePrice;
+                            var msrp = vehicle.msrp;
+                            var picture = vehicle.picture;
+
+                            var containerRow = document.createElement("div");
+                            containerRow.className = "row";
+                            containerRow.id = id;
+
+                            var container = document.getElementById("searchContainer");
+                            container.appendChild(containerRow);
+
+                            var image = document.createElement("img");
+                            image.src = picture;
+
+                            var column1 = document.createElement("div");
+                            column1.className = "col";
+
+                            var makeModelYear = document.createElement("p");
+                            makeModelYear.id = "makeModelYear" + id;
+
+                            column1.appendChild(makeModelYear);
+                            column1.appendChild(image);
+
+                            /////////////////////////////////////////////
+
+                            var column2 = document.createElement("div");
+                            column2.className = "col";
+
+                            var body = document.createElement("p")
+                            body.id = "body" + id;
+
+                            var trans = document.createElement("p");
+                            trans.id = "trans" + id;
+
+                            var color = document.createElement("p");
+                            color.id = "color" + id;
+
+                            column2.appendChild(body);
+                            column2.appendChild(trans);
+                            column2.appendChild(color);
+
+                            /////////////////////////////////////////////
+
+                            var column3 = document.createElement("div");
+                            column3.className = "col";
+
+                            var carInterior = document.createElement("p");
+                            carInterior.id = "interior" + id;
+
+                            var miles = document.createElement("p");
+                            if (mileage > 0 && mileage <= 1000) {
+                                $(miles).text("Mileage: New");
+                            }
+                            else {
+                                $(miles).text("Mileage: " + mileage);
+                            }
+                            
+
+                            var vinNumber = document.createElement("p");
+                            vinNumber.id = "vin" + id;
+
+                            column3.appendChild(carInterior);
+                            column3.appendChild(miles);
+                            column3.appendChild(vinNumber);
+
+                            ////////////////////////////////////////////
+
+                            var column4 = document.createElement("div");
+                            column4.className = "col";
+
+                            var sale = document.createElement("p");
+                            sale.id = "sale" + id;
+
+                            var manPrice = document.createElement("p");
+                            manPrice.id = "msrp" + id;
+
+                            var purchaseButton = document.createElement("button");
+                            purchaseButton.id = "purchase" + id;
+                            $(purchaseButton).text("Purchase");
+
+                            column4.appendChild(sale);
+                            column4.appendChild(manPrice);
+                            column4.appendChild(purchaseButton);
+
+                            containerRow.appendChild(column1);
+                            containerRow.appendChild(column2);
+                            containerRow.appendChild(column3);
+                            containerRow.appendChild(column4);
+
+                            $("#makeModelYear" + id).text(year + ' '  + make + ' ' + model);
+
+                            $("#body" + id).text("Body Style: " + bodyStyle);
+                            $("#trans" + id).text("Trans: " + transmission);
+                            $("#color" + id).text("Color: " + outerColor);
+
+                            $("#interior" + id).text("Interior: " + interior);
+
+                            $("#vin" + id).text("VIN #: " + vin);
+
+                            $("#sale" + id).text("Sale Price: $" + salePrice);
+                            $("#msrp" + id).text("MSRP: $" + msrp);
+
+                            $("#purchase" + id).click(function () {
+                                window.location.href = '/Sales/Purchase/' + id;
+                            });
+
+                        });
+                    },
+                    error: function () {
+                        alert("Ajax failure");
+                    }
+                });
+
+        });
+    });
+
+
+
+</script>
+
