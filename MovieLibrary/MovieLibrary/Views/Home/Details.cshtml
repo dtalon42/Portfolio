@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div class="container" id="detailsContainer">
+    <h1 id="title"></h1>
+    <hr />
+    <div class="row">
+        <div class="col">
+            <p><b>Release Year:</b></p>
+        </div>
+        <div class="col">
+            <p id="releaseYear"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p><b>Director:</b></p>
+        </div>
+        <div class="col">
+            <p id="director"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p><b>Rating:</b></p>
+        </div>
+        <div class="col">
+            <p id="rating"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p><b>Description:</b></p>
+        </div>
+        <div class="col">
+            <p id="description"></p>
+        </div>
+    </div>
+
+    <div class="row" id="thumbsUpRow">
+        <div class="col">
+            <p><b>Thumbs Up:</b></p>
+        </div>
+        <div class="col">
+            <p id="thumbsUp"></p>
+        </div>
+    </div>
+
+    <div class="row" id="thumbsDownRow">
+        <div class="col">
+            <p><b>Thumbs Down:</b></p>
+        </div>
+        <div class="col">
+            <p id="thumbsDown"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <button type="button" class="btn btn-primary" id="backBtn">Back</button>
+    </div>
+
+
+
+</div>
+
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var detailParam = window.location.href;
+        var movieId = detailParam[detailParam.length - 1];
+
+        $("#backBtn").click(function () {
+            window.location.href = '/Home/MovieLibrary/'
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44356/movie/" + movieId,
+            success: function (movie) {
+                var id = movie.movieId;
+                var title = movie.title;
+                var releaseYear = movie.releaseYear;
+                var director = movie.director;
+                var rating = movie.rating;
+                var description = movie.description;
+                var thumbsUp = movie.thumbsUp;
+                var thumbsDown = movie.thumbsDown;
+
+                $("#title").text(title);
+                $("#releaseYear").text(releaseYear);
+                $("#director").text(director);
+                $("#rating").text(rating);
+                $("#description").text(description);
+                $("#thumbsUp").text(thumbsUp);
+                $("#thumbsDown").text(thumbsDown);
+
+
+            }
+        });
+
+        $("#thumbsUpRow").on('click', function () {
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44356/movies/thumbsUp/" + movieId,
+                contentType: 'application/json',
+                success: function () {
+                    var num = parseInt($("#thumbsUp").text());
+                    num = num + 1;
+                    $("#thumbsUp").val(num);
+                    $("#thumbsUp").text(num);
+                },
+                error: function () {
+                    alert("increment operation failed");
+                }
+            });
+
+        });
+
+        $("#thumbsDownRow").on('click', function () {
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44356/movies/thumbsDown/" + movieId,
+                contentType: 'application/json',
+                success: function () {
+                    var num = parseInt($("#thumbsDown").text());
+                    num = num + 1;
+                    $("#thumbsDown").val(num);
+                    $("#thumbsDown").text(num);
+                },
+                error: function () {
+                    alert("increment operation failed");
+                }
+            });
+
+        });
+
+
+    });
+</script>

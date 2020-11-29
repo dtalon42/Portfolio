@@ -1,0 +1,309 @@
+﻿
+@{
+    ViewBag.Title = "MovieLibrary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>MovieLibrary</h2>
+
+<style>
+    #searchBtn {
+        margin-left:170px;
+    }
+</style>
+<form id="movieForm">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-primary" id="addMovie">Add Movie</button>
+            </div>
+
+            <div class="col">
+                <button type="submit" class="btn btn-primary" id="searchBtn">Search</button>
+            </div>
+            <div class="col">
+                <select class="form-control" id="searchSel" name="searchType">
+                    Search Type
+                    <option value="0">Title</option>
+                    <option value="1">Year</option>
+                    <option value="2">Rating</option>
+                    <option value="3">Director</option>
+                </select>
+            </div>
+            <div class="col">
+                <input class="form-control" type="text" id="searchString" name="searchString" placeholder="Search Term" />
+            </div>
+        </div>
+        <hr />
+    </div>
+</form>
+<div class="container">
+    <table class="table table-bordered" id="movieTable">
+        <thead>
+            <tr>
+                <th scope="col" onclick="sortTable(0, false)">Title</th>
+                <th scope="col" onclick="sortTable(1, true)">Release Date</th>
+                <th scope="col" onclick="sortTable(2, false)">Director</th>
+                <th scope="col">Rating</th>
+                <th scope="col" onclick="sortTable(4, true)">Thumbs Up</th>
+                <th scope="col" onclick="sortTable(5, true)">Thumbs Down</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="movies">
+
+        </tbody>
+    </table>
+</div>
+
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+<script>
+
+    // sortTable function used from https://www.w3schools.com/howto/howto_js_sort_table.asp
+    function sortTable(n, isNumber) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("movieTable");
+        switching = true;
+
+        dir = "asc";
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+
+                if (dir == "asc") {
+                    if (isNumber == true) {
+                        if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                    else {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                else if (dir == "desc") {
+                    if (isNumber == true) {
+                        if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                    else {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }   
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+
+    function buildTable(moviesArray) {
+        $.each(moviesArray, function (index, movie) {
+                            var id = movie.movieId;
+                            var title = movie.title;
+                            var releaseYear = movie.releaseYear;
+                            var director = movie.director;
+                            var rating = movie.rating;
+                            var thumbsUp = movie.thumbsUp;
+                            var thumbsDown = movie.thumbsDown;
+
+                            var tableRow = document.createElement("tr");
+
+                            var titleCell = document.createElement("td");
+                            titleCell.id = "title" + id;
+                            tableRow.appendChild(titleCell);
+
+
+                            var yearCell = document.createElement("td");
+                            yearCell.id = "year" + id;
+                            tableRow.appendChild(yearCell);
+
+                            var directorCell = document.createElement("td");
+                            directorCell.id = "director" + id;
+                            tableRow.appendChild(directorCell);
+
+                            var ratingCell = document.createElement("td");
+                            ratingCell.id = "rating" + id;
+                            tableRow.appendChild(ratingCell);
+
+                            var tUpCell = document.createElement("td");
+                            tUpCell.id = "tUp" + id;
+                            tUpCell.name = id;
+                            tableRow.appendChild(tUpCell);
+
+                            var tDownCell = document.createElement("td");
+                            tDownCell.id = "tDown" + id;
+                            tDownCell.name = id;
+                            tableRow.appendChild(tDownCell);
+
+                            var linkCell = document.createElement("td");
+                            linkCell.id = "link" + id;
+
+                            var editLink = document.createElement("button");
+                            editLink.className = "btn-primary pull-left";
+                            editLink.id = "edit" + id;
+                            editLink.name = id;
+                            $(editLink).text("Edit");
+                            linkCell.appendChild(editLink);
+
+                            var deleteLink = document.createElement("button");
+                            deleteLink.className = "btn-primary pull-right";
+                            deleteLink.id = "delete" + id;
+                            deleteLink.name = id;
+                            $(deleteLink).text("Delete");
+                            linkCell.appendChild(deleteLink);
+
+                            tableRow.appendChild(linkCell);
+
+
+                            var table = document.getElementsByClassName("table");
+                            $(table).find('tbody').append(tableRow);
+
+                            $("#title" + id).text(title);
+                            $("#title" + id).on('click', function () {
+                                window.location.href = '/Home/Details/' + id;
+                            });
+
+                            $("#year" + id).text(releaseYear);
+                            $("#director" + id).text(director);
+                            $("#rating" + id).text(rating);
+
+                            $("#tUp" + id).text(thumbsUp);
+                            $("#tUp" + id).val(thumbsUp);
+
+                            $("#tDown" + id).text(thumbsDown);
+                            $("#tDown" + id).val(thumbsDown);
+
+                            $("#tUp" + id).on('click', function () {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "https://localhost:44356/movies/thumbsUp/" + this.name,
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        var num = parseInt($("#tUp" + id).val());
+                                        num = num + 1;
+                                        $("#tUp" + id).val(num);
+                                        $("#tUp" + id).text(num);
+                                    },
+                                    error: function () {
+                                        alert("increment operation failed");
+                                    }
+                                });
+
+                            });
+
+                            $("#tDown" + id).on('click', function () {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "https://localhost:44356/movies/thumbsDown/" + this.name,
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        var num = parseInt($("#tDown" + id).val());
+                                        num = num + 1;
+                                        $("#tDown" + id).val(num);
+                                        $("#tDown" + id).text(num);
+                                    },
+                                    error: function () {
+                                        alert("increment operation failed");
+                                    }
+                                });
+
+                            });
+
+                            $("#edit" + id).click(function () {
+                                window.location.href = '/Home/EditMovie/' + id;
+                            });
+
+                            $("#delete" + id).click(function () {
+                                if (confirm("Are you sure you want to delete this movie?")) {
+                                    $.ajax({
+                                        type: "DELETE",
+                                        url: "https://localhost:44356/movie/" + this.name,
+                                        contentType: 'application/json',
+                                        success: function () {
+                                            alert("Movie deleted.");
+                                            window.location.reload();
+                                        },
+                                        error: function () {
+                                            alert("Delete or ajax failure");
+                                        }
+                                    });
+                                }
+                                else {
+
+                                }
+
+                            });
+
+                        });
+    }
+
+
+    $(document).ready(function () {
+        $("#addMovie").click(function () {
+            window.location.href = '/Home/AddMovie/'
+        });
+        
+        $("#movieForm").on('submit', function (e) {
+            var table = document.getElementsByClassName("table");
+            $(table).find('tbody').empty();
+            if ($("#searchString").val() === "" || $("#searchString").val() == null) {
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:44356/movies/",
+                    async: false,
+                    success: function (moviesArray) {
+                        buildTable(moviesArray);
+                    },
+                    error: function () {
+                        alert("Failure to retrieve data");
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "https://localhost:44356/movies/search",
+                    contentType: 'application/json',
+                    async: false,
+                    data: JSON.stringify({
+                        "searchString": $("#searchString").val(),
+                        "searchType": $("#searchSel").val()
+                    }),
+                    success: function (moviesArray) {
+                        buildTable(moviesArray);
+                    },
+                    error: function () {
+                        alert("search returned no results");
+                    }
+                });
+            }
+            e.preventDefault();
+        });
+
+        
+    });
+</script>
